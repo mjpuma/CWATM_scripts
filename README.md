@@ -7,3 +7,5 @@ Code to open CWATM diagnostics for individual monthly or daily files and create 
 ## create_plot_CWATM.py
 Code to analyze and plot CWATM diagnostics processed by script "create_timeseries_CWATM.py"
 
+## change_prec_CWATM.py
+Code used to change the precipitation.nc file in the CWATM
