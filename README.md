@@ -9,3 +9,6 @@ Code to analyze and plot CWATM diagnostics processed by script "create_timeserie
 
 ## change_prec_CWATM.py
 Code used to change the precipitation.nc file in the CWATM
+
+## create_plot_Rhine_class.py
+Added working code that reads CWatM output files and creates 8 plots of each variable, whether they be difference plots, old plots, or new plots. 
