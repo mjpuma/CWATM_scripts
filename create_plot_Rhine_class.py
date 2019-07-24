@@ -303,7 +303,7 @@ class Rhine_Meteo_Var_Plots:
         # Loop through all the arrays of the meteo variables, creating a plot for every one
         #-----------------------------------------------------------------------
 
-        for i in range(len(meteo_var)+1):
+        for i in range(len(meteo_var)):
             
             #---------------------------------------------------------------------------------------------------------------------
             extent_lonlat = (3, 12, 45, 53)
