@@ -8,47 +8,56 @@
 #    ##     ##      ##     ##   ##  ##   ##
 #     #######    ########   #####    ##### 
 #
-# Name:        change prec CWATM
-# Purpose:     Change the Precipitation value to study the effects of precipitation
-#              on the surrounding area in the Rhine River. The code can be 
-#              changed to suite other modifications to the netCDF4 files.  
+# Name:        alter_prec_data
 #
-# Author:      Nonnie Woodruff, intern at GISS 
-# Mentor:      Dr. Michael J.Puma & James Miller
+# Purpose:     Change the Precipitation value of netCDF4 files used in the CWat
+#              model. The code can be changed to suite other modifications to
+#              the netCDF4 files.  
+#
+# Author:      N. Woodruff, M.J.Puma
 
 # Created:     16/07/2019
 # -------------------------------------------------------------------------
 
-from netCDF4 import Dataset
-import numpy as np
+import calendar
+import netCDF4
 
-path = "pr_rhine_original.nc"                    # The netCDF4 file in the same folder as this python script
+# Percentage change to be implemented to the precipitation variable
+percentPr = 0.9
 
-with Dataset(path) as data:
+# Open up netCDF file
+# "r+" is read the data, alter it, and save it back to the original file.
+with netCDF4.Dataset("0.9_pr_rhine.nc", "r+") as dset:
     
-    lon = data["lon"][:]
-    lat = data["lat"][:]
-    time = data["time"][:]
-    prec = data["prec"][:,:,:]
-    print(data)
+    # Set the data of precipitation to be a new variable
+    # The notes after the OriginalData are the different sizes and meanings of the different parts of the 3 dimensional array
+    OriginalData = dset['prec'][:,:,:]  #[ time , lat , lon ] [19358, 12, 14]
     
-path2 = "pr_rhine.nc"
-data2 = Dataset(path2, 'w', format='NETCDF4_CLASSIC')
+    numDaysInRegYear = 365                 # Initialize the data variable
+    numDaysInLeapYear = 366
 
-lonDim = data2.createDimension('lon',14)
-latDim = data2.createDimension('lat',12)
-timeDim = data2.createDimension('time',19358)
-
-lonVar = data2.createVariable('lon', np.float32, dimensions = ("lon"))
-latVar = data2.createVariable('lat', np.float32, dimensions = ("lat"))
-timeVar = data2.createVariable('time', np.float32, dimensions = ("time"))
-precVar = data2.createVariable('prec', np.float32, dimensions = ("time","lat","lon"))
-
-lonVar[:] = lon[:]
-latVar[:] = lat[:]
-timeVar[:] = time[:]
-
-# The meat of this program. Changing the precipitation before saving it to the .nc file
-precVar[:,:,:] = 1.2*prec[:,:,:]
-
-data2.close()
+    totalDays = 0                       # Initialize variable
+    
+    # Loop through all the years the netCDF file contains (You have to know this number)
+    for year in range(1961, 2014):
+        if calendar.isleap(year) == True:
+            for j in range(numDaysInLeapYear):
+                
+                # Summer time -> June-July-Aug 
+                # Alter the original data, and save it to the file
+                if 152 <= j <= 243: 
+                    dset['prec'][totalDays,:,:] = percentPr * OriginalData[totalDays,:,:] 
+                
+                # increment total days, to keep track of which day you are altering in the file
+                totalDays += 1
+        
+        else:
+            for k in range(numDaysInRegYear):
+                
+                # Summer time -> June-July-August
+                # Alter the original data, and save it to the file
+                if 151 <= k <= 242:
+                    dset['prec'][totalDays,:,:] = percentPr * OriginalData[totalDays,:,:] 
+                
+                # increment total days, to keep track of which day you are altering in the file
+                totalDays += 1
